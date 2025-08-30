@@ -1,0 +1,93 @@
+/* home.css */
+
+:root {
+  --bg: #f0f2f5;
+  --card-bg: #ffffff;
+  --text-color: #333;
+  --hover-scale: 1.07;
+  --hover-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1e1e1e;
+    --card-bg: #2a2a2a;
+    --text-color: #040404;
+    --hover-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
+  }
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text-color);
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.home-container {
+  padding: 40px;
+  text-align: center;
+}
+
+.home-title {
+  font-size: 32px;
+  margin-bottom: 40px;
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 30px;
+  justify-items: center;
+}
+
+.home-card {
+  background-color: var(--card-bg);
+  border-radius: 16px;
+  padding: 30px 20px;
+  text-align: center;
+  text-decoration: none;
+  color: var(--text-color);
+  width: 100%;
+  max-width: 220px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s;
+  cursor: pointer;
+}
+
+.home-card:hover {
+  transform: scale(var(--hover-scale));
+  box-shadow: var(--hover-shadow);
+  background-color: var(--bg);
+}
+
+.home-card svg {
+  margin-bottom: 10px;
+  color: #4c6ef5;
+  transition: color 0.3s;
+}
+
+.home-card:hover svg {
+  color: #3b5bdb;
+}
+
+.home-card span {
+  display: block;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.menu-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-color);
+}
+

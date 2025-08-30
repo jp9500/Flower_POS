@@ -1,0 +1,213 @@
+.master-container {
+  padding: 10px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.tab-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tab-buttons button {
+  background: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  color: green;
+  box-shadow: 0 0 5px green;
+}
+
+.tab-buttons button.active {
+  background-color: green;
+  color: white;
+}
+
+.add-btn {
+  background-color: green;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.add-btn:hover {
+  background-color: #5c5c5c;
+}
+
+.card-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  margin-top: 50px;
+}
+
+.inventory-card {
+  border-radius: 8px;
+  width: 250px;
+  height: 30px;
+  padding: 40px;
+  background: #b2efb4;
+  box-shadow: 5px 5px 10px #008000;
+}
+
+.card-header h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  margin-right: 8px;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.edit-btn {
+  color: #2196f3;
+}
+
+.edit-btn:hover {
+  color: #1976d2;
+  transform: scale(1.2);
+}
+
+.delete-btn {
+  color: #f44336;
+}
+
+.delete-btn:hover {
+  color: #d32f2f;
+  transform: scale(1.2);
+}
+
+.view-btn {
+  color: #4caf50;
+}
+
+.view-btn:hover {
+  color: #388e3c;
+  transform: scale(1.2);
+}
+
+@media (min-width: 768px) {
+  .icon-btn {
+    font-size: 1.5rem;
+    margin-right: 12px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .icon-btn {
+    font-size: 1.7rem;
+    margin-right: 16px;
+  }
+}
+
+/* Modal Styling */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 300px;
+  max-width: 90%;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  position: relative;
+}
+
+.modal-content h3 {
+  margin-bottom: 15px;
+  font-size: 20px;
+  text-align: center;
+  padding: 10px;
+  background-color: grey;
+  font-weight: bold;
+  border-radius: 5px;
+}
+
+.modal-content input,
+.modal-content select {
+  padding: 10px;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.modal-content .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modal-content button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.modal-content button[type="submit"] {
+  background: #4caf50;
+  color: white;
+}
+
+.modal-content button[type="button"],
+.close-view-btn {
+  background: #f44336;
+  color: white;
+}
+
+.close-view-btn {
+  margin-top: 10px;
+  font-size: 15px;
+  padding: 5px 10px;
+}
+
+.modal-content p {
+  margin: 10px 0;
+  font-size: 15px;
+}
+
+.inventory-card {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.inventory-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 10px black;
+}
