@@ -1,5 +1,6 @@
-import { toast } from 'react-toastify';
-const API_BASE = 'http://192.168.56.1:8080';
+import axios from "axios";
+
+const API_BASE = "https://localhost:8443" ;
 
 // --- Auth ---
 export const signupUser = async (data) => {
@@ -111,16 +112,13 @@ export const saveTransaction = async (rows) => {
     });
 
     if (!res.ok) {
-      toast.error("Failed to save transaction");
       return { ok: false };
     }
 
     const data = await res.json();
-    toast.success("Transaction saved successfully");
     return { ok: true, data };
   } catch (error) {
     console.error("Error saving transaction:", error);
-    toast.error("Error saving transaction");
     return { ok: false, error };
   }
 };
@@ -158,3 +156,20 @@ export const fetchItem = async (query) => {
 //   const response = await axios.post(API_URL, transaction);
 //   return response.data;
 // };
+
+
+
+//    -- Reports --
+
+
+// ✅ Fetch overall sales summary
+export const getOverallSales = () => fetch(`${API_BASE}/overallSales`);
+
+// ✅ Fetch item-wise sales
+export const getItemWiseSales = () => fetch(`${API_BASE}/itemwiseSales`);
+
+// ✅ Fetch date-wise sales
+export const getDateWiseSales = () => fetch(`${API_BASE}/datewiseSales`);
+
+// ✅ Fetch recent transactions
+export const getRecentTransactions = () => fetch(`${API_BASE}/recentTransactions`);

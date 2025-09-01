@@ -15,7 +15,7 @@ function Footer() {
           <FaExchangeAlt size={20} />
           <span>Transaction</span>
         </Link>
-        <Link to="/reports" className="footer-btn">
+        <Link to="/report" className="footer-btn">
           <FaChartBar size={20} />
           <span>Reports</span>
         </Link>

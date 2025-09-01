@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Navbar from './components/navebar';
 import Footer from './components/footer';
 import Master from './pages/master';
 import Transaction from './pages/transaction';
@@ -8,7 +7,6 @@ import Login from './pages/login';
 import Signup from './pages/signup';
 import ProtectedRoute from './ProtectedRoute';
 import { AuthProvider, useAuth } from './AuthContext';
-import Home from './pages/home';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -26,9 +24,6 @@ function AppContent() {
           <Route path="/signup" element={<Signup />} />
 
           {/* Protected Routes */}
-          <Route path="/home" element={
-            <ProtectedRoute><Home /></ProtectedRoute>
-          } />
           <Route path="/master" element={
             <ProtectedRoute><Master /></ProtectedRoute>
           } />
@@ -41,7 +36,7 @@ function AppContent() {
         </Routes>
       </main>
 
-      <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="bottom-center" autoClose={1000} />
 
       {/* Footer only after login */}
       {isAuthenticated && <Footer />}
