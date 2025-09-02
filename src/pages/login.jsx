@@ -45,6 +45,7 @@ function Login() {
             <input
               type="text"
               name="username"
+              placeholder='Enter your username'
               value={form.username}
               onChange={handleChange}
               required
@@ -57,6 +58,7 @@ function Login() {
             <input
               type="password"
               name="password"
+              placeholder='Enter your password'
               value={form.password}
               onChange={handleChange}
               required

@@ -48,6 +48,7 @@ function Signup() {
             <input
               type="text"
               name="name"
+              placeholder='Enter your Full Name'
               value={form.name}
               onChange={handleChange}
               required
@@ -59,6 +60,7 @@ function Signup() {
             <input
               type="text"
               name="username"
+              placeholder='Enter the email or username'
               value={form.username}
               onChange={handleChange}
               required
@@ -70,6 +72,7 @@ function Signup() {
             <input
               type="password"
               name="password"
+              placeholder='Enter your password'
               value={form.password}
               onChange={handleChange}
               required

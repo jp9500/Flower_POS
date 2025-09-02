@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE = "https://localhost:8443" ;
+const API_BASE = "http://192.168.1.6:8443" ;
 
 // --- Auth ---
 export const signupUser = async (data) => {
@@ -161,15 +161,29 @@ export const fetchItem = async (query) => {
 
 //    -- Reports --
 
+export const getOverallSales = async (input) => {
+  try {
+    const res= await fetch(`${API_BASE}/overallSales?input=${input}`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+    if (res != null) {
+      const result = await res.json();
+      return result;
+    }
+  } catch (error) {
+    console.log("error fetchoverAllSales search item"+error);
+  }
+};
 
 // ✅ Fetch overall sales summary
-export const getOverallSales = () => fetch(`${API_BASE}/overallSales`);
+// export const getOverallSales = (input) => fetch(`${API_BASE}/overallSales?month=${input}`);
 
 // ✅ Fetch item-wise sales
-export const getItemWiseSales = () => fetch(`${API_BASE}/itemwiseSales`);
+export const getItemWiseSales = (input) => fetch(`${API_BASE}/itemwiseSales?month=${input}`);
 
 // ✅ Fetch date-wise sales
-export const getDateWiseSales = () => fetch(`${API_BASE}/datewiseSales`);
+export const getDateWiseSales = (input) => fetch(`${API_BASE}/datewiseSales?month=${input}`);
 
 // ✅ Fetch recent transactions
-export const getRecentTransactions = () => fetch(`${API_BASE}/recentTransactions`);
+export const getRecentTransactions = (input) => fetch(`${API_BASE}/recentTransactions?month=${input}`);
