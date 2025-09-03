@@ -88,8 +88,8 @@ const Transaction = () => {
   const grandTotal = subTotal - commissionTotal;
 
   return (
-    <div className="p-6 max-w-5xl mx-auto bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold text-green-600 mb-6">Transaction</h1>
+    <div className="max-w-5xl mx-auto min-h-screen">
+      <h1 className="text-2xl font-bold text-green-600 mb-6">Transaction</h1>
 
       {/* Add Row */}
       <button
@@ -119,7 +119,7 @@ const Transaction = () => {
       {rows.map((row, index) => (
         <div
           key={index}
-          className="grid grid-cols-5 gap-2 items-center mb-3 bg-white shadow rounded-lg p-3"
+          className="grid grid-cols-5 gap-2 items-center mb-3 shadow rounded-lg p-3"
         >
           {/* Item Name */}
           <div className="relative">

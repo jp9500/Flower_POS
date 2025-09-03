@@ -4,6 +4,11 @@ import {
   Pie,
   Cell,
   ResponsiveContainer,
+  BarChart,
+  Bar,
+  LabelList,
+  XAxis,
+  YAxis,
 } from "recharts";
 import {
   getOverallSales,
@@ -12,6 +17,7 @@ import {
   getTransactionDetails, // ✅ new service
 } from "../services/authservice";
 import NoDataSVG from "../components/nodataSVG";
+import { toast,ToastContainer } from "react-toastify";
 
 
 // Clean modern color palette
@@ -31,13 +37,15 @@ export default function Report() {
   // const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
 
   // 🔹 Date filters
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
+  const date = new Date().toISOString().split("T")[0] ; // YYYY-MM-DD
+  const [fromDate, setFromDate] = useState(date);
+  const [toDate, setToDate] = useState(date);
 
   // 🔹 Modal states
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [transactionItems, setTransactionItems] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
 
   // const months = [
   //   { value: 1, label: "JAN" },
@@ -55,6 +63,15 @@ export default function Report() {
   // ];
 
   useEffect(() => {
+     if (fromDate && toDate) {
+        if (new Date(fromDate) > new Date(toDate)) {
+          toast.error(" Invalid Date Range!");
+           setOverallSales([]);
+           setItemWiseSales([]);
+           setRecentTransactions([]);
+          return;
+        }
+      }
     loadReports(fromDate, toDate);
   }, [fromDate, toDate]);
 
@@ -103,30 +120,15 @@ export default function Report() {
   );
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-2xl font-bold text-gray-700 mb-6 flex items-center gap-2">
+    <div className="p-6 min-h-screen">
+      <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
         📊 Reports Dashboard
       </h1>
 
       {/* FILTERS */}
       <div className="flex flex-wrap gap-6 mb-6 items-end">
-        {/* <div>
-          <label className="font-medium mr-2">Month:</label>
-          <select
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(Number(e.target.value))}
-            className="border rounded p-1"
-          >
-            {months.map((m) => (
-              <option key={m.value} value={m.value}>
-                {m.label}
-              </option>
-            ))}
-          </select>
-        </div> */}
-
         <div>
-          <label className="block text-sm font-medium">From Date:</label>
+          <label className="block text-sm font-medium bg-none">From Date:</label>
           <input
             type="date"
             value={fromDate}
@@ -148,25 +150,23 @@ export default function Report() {
 
       {/* GRID LAYOUT */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
         {/* Overall Sales */}
         <Card title="Overall Sales">
           {overallSales.length > 0 ? (
-            <div className="flex flex-col items-center">
-              <ResponsiveContainer width="100%" height={250}>
-                <PieChart>
-                  <Pie
-                    data={overallSales}
-                    dataKey="value"
-                    nameKey="label"
-                    outerRadius={85}
-                  >
+            <div className="flex flex-col items-center justify-center">
+              <ResponsiveContainer width="100%" height={280}>
+                <BarChart data={overallSales} barCategoryGap="25%">
+                  <XAxis dataKey="label" stroke="#555" tick={{ fontSize: 12 }} />
+                  <YAxis tick={{ fontSize: 14 }} />
+                  <Bar dataKey="value" radius={[8, 8, 0, 0]}>
                     {overallSales.map((_, i) => (
                       <Cell key={i} fill={COLORS[i % COLORS.length]} />
                     ))}
-                  </Pie>
-                </PieChart>
+                    <LabelList dataKey="value" position="top" fill="#333" fontSize={12} />
+                  </Bar>
+                </BarChart>
               </ResponsiveContainer>
-              {renderLegend(overallSales)}
             </div>
           ) : (
             <div className="flex justify-center items-center h-[250px]">
@@ -174,6 +174,9 @@ export default function Report() {
             </div>
           )}
         </Card>
+
+
+
 
         {/* Item Wise Sales */}
         <Card title="Item Wise Sales">
@@ -193,7 +196,7 @@ export default function Report() {
                   </Pie>
                 </PieChart>
               </ResponsiveContainer>
-              {renderLegend(itemWiseSales, "item")}
+              {renderLegend(itemWiseSales)}
             </div>
           ) : (
             <div className="flex justify-center items-center h-[250px]">
@@ -256,6 +259,7 @@ export default function Report() {
                     <th className="border p-2">Item</th>
                     <th className="border p-2">Qty</th>
                     <th className="border p-2">Price</th>
+                    <th className="border p-2">Total</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -263,12 +267,29 @@ export default function Report() {
                     <tr key={idx} className="hover:bg-gray-50 text-center">
                       <td className="border p-2">{item.itemName}</td>
                       <td className="border p-2">{item.qty}</td>
-                      <td className="border p-2 text-green-600 font-semibold">
+                      <td className="border p-2">
                         ₹{item.price.toLocaleString("en-IN")}
+                      </td>
+                      <td className="border p-2 font-semibold">
+                        ₹{item.total.toLocaleString("en-IN")}
                       </td>
                     </tr>
                   ))}
                 </tbody>
+                <tfoot className="">
+                  <tr>
+                    <td colSpan={2} className="border p-3 text-right font-semibold">Commission :</td>      
+                    <td colSpan={2} className="border p-2 text-right font-semibold text-red-600">
+                       ₹{selectedTransaction.commTotal.toLocaleString("en-IN")}.00
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colSpan={2}  className="border p-3 text-right font-semibold">Total :</td>
+                    <td colSpan={2} className="border p-2 text-right font-semibold text-green-600">
+                      ₹{selectedTransaction.amount.toLocaleString("en-IN")}.00
+                    </td>
+                  </tr>
+                </tfoot>
               </table>
             ) : (
               <p>No items found</p>
@@ -285,6 +306,8 @@ export default function Report() {
           </div>
         </div>
       )}
+
+       <ToastContainer position="bottom-center"  autoClose={1000}  style={{ bottom: "20px" }}  />
     </div>
   );
 }

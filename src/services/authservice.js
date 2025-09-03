@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE = "http://192.168.56.1:8443" ;
+const API_BASE = "http://192.168.1.130:8443" ;
 
 // --- Auth ---
 export const signupUser = async (data) => {

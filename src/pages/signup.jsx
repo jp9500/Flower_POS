@@ -92,12 +92,12 @@ function Signup() {
             </Link>
           </p>
         </form>
-        <Link
+        {/* <Link
           to="/ipconfig"
           className="block mt-4 text-center text-green-600 hover:underline"
         >
           Config
-        </Link>
+        </Link> */}
       </div>
     </div>
   );
