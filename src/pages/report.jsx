@@ -4,19 +4,15 @@ import {
   Pie,
   Cell,
   ResponsiveContainer,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  LabelList,
 } from "recharts";
 import {
   getOverallSales,
   getItemWiseSales,
-  getDateWiseSales,
   getRecentTransactions,
+  getTransactionDetails, // ✅ new service
 } from "../services/authservice";
 import NoDataSVG from "../components/nodataSVG";
+
 
 // Clean modern color palette
 const COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#14B8A6"];
@@ -31,47 +27,65 @@ const Card = ({ title, children }) => (
 export default function Report() {
   const [overallSales, setOverallSales] = useState([]);
   const [itemWiseSales, setItemWiseSales] = useState([]);
-  const [dateWiseSales, setDateWiseSales] = useState([]);
   const [recentTransactions, setRecentTransactions] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+  // const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
 
-  const months = [
-    { value: 1, label: "JAN" },
-    { value: 2, label: "FEB" },
-    { value: 3, label: "MAR" },
-    { value: 4, label: "APR" },
-    { value: 5, label: "MAY" },
-    { value: 6, label: "JUN" },
-    { value: 7, label: "JUL" },
-    { value: 8, label: "AUG" },
-    { value: 9, label: "SEP" },
-    { value: 10, label: "OCT" },
-    { value: 11, label: "NOV" },
-    { value: 12, label: "DEC" },
-  ];
+  // 🔹 Date filters
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+
+  // 🔹 Modal states
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
+  const [transactionItems, setTransactionItems] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // const months = [
+  //   { value: 1, label: "JAN" },
+  //   { value: 2, label: "FEB" },
+  //   { value: 3, label: "MAR" },
+  //   { value: 4, label: "APR" },
+  //   { value: 5, label: "MAY" },
+  //   { value: 6, label: "JUN" },
+  //   { value: 7, label: "JUL" },
+  //   { value: 8, label: "AUG" },
+  //   { value: 9, label: "SEP" },
+  //   { value: 10, label: "OCT" },
+  //   { value: 11, label: "NOV" },
+  //   { value: 12, label: "DEC" },
+  // ];
 
   useEffect(() => {
-    loadReports(selectedMonth);
-  }, [selectedMonth]);
+    loadReports(fromDate, toDate);
+  }, [fromDate, toDate]);
 
-  const loadReports = async (month) => {
+  const loadReports = async (from, to) => {
     try {
-      const [overall, itemWise, dateWise, transactions] = await Promise.all([
-        getOverallSales(month),
-        getItemWiseSales(month),
-        getDateWiseSales(month),
-        getRecentTransactions(month),
+      const [overall, itemWise, transactions] = await Promise.all([
+        getOverallSales(from , to),
+        getItemWiseSales(from , to),
+        getRecentTransactions(from , to), // ✅ pass dates
       ]);
       setOverallSales(overall || []);
       setItemWiseSales(itemWise || []);
-      setDateWiseSales(dateWise || []);
       setRecentTransactions(transactions || []);
     } catch (error) {
       console.error("Error fetching reports:", error);
     }
   };
 
-  // Custom legend below charts
+  // 🔹 Row click handler
+  const handleRowClick = async (tx) => {
+    try {
+      const details = await getTransactionDetails(tx.id); // API call for items
+      setSelectedTransaction(tx);
+      setTransactionItems(details || []);
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error("Error fetching transaction details:", error);
+    }
+  };
+
+  // Custom legend
   const renderLegend = (data, labelKey = "label") => (
     <div className="flex flex-wrap justify-center gap-4 mt-3">
       {data.map((entry, i) => (
@@ -95,8 +109,8 @@ export default function Report() {
       </h1>
 
       {/* FILTERS */}
-      <div className="flex gap-4 mb-6">
-        <div>
+      <div className="flex flex-wrap gap-6 mb-6 items-end">
+        {/* <div>
           <label className="font-medium mr-2">Month:</label>
           <select
             value={selectedMonth}
@@ -109,12 +123,31 @@ export default function Report() {
               </option>
             ))}
           </select>
+        </div> */}
+
+        <div>
+          <label className="block text-sm font-medium">From Date:</label>
+          <input
+            type="date"
+            value={fromDate}
+            onChange={(e) => setFromDate(e.target.value)}
+            className="border p-1 rounded"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium">To Date:</label>
+          <input
+            type="date"
+            value={toDate}
+            onChange={(e) => setToDate(e.target.value)}
+            className="border p-1 rounded"
+          />
         </div>
       </div>
 
       {/* GRID LAYOUT */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        
         {/* Overall Sales */}
         <Card title="Overall Sales">
           {overallSales.length > 0 ? (
@@ -126,7 +159,6 @@ export default function Report() {
                     dataKey="value"
                     nameKey="label"
                     outerRadius={85}
-                    label={false} // removed inside labels
                   >
                     {overallSales.map((_, i) => (
                       <Cell key={i} fill={COLORS[i % COLORS.length]} />
@@ -154,7 +186,6 @@ export default function Report() {
                     dataKey="value"
                     nameKey="item"
                     outerRadius={85}
-                    label={false} // removed inside labels
                   >
                     {itemWiseSales.map((_, i) => (
                       <Cell key={i} fill={COLORS[i % COLORS.length]} />
@@ -171,60 +202,31 @@ export default function Report() {
           )}
         </Card>
 
-        {/* Date Wise Sales */}
-        <Card title="Date Wise Sales">
-          {dateWiseSales.length > 0 ? (
-            <div className="flex flex-col items-center">
-              <ResponsiveContainer width="100%" height={250}>
-                <LineChart data={dateWiseSales}>
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Line
-                    type="monotone"
-                    dataKey="value"
-                    stroke="#3B82F6"
-                    strokeWidth={2}
-                    dot={{ r: 4, fill: "#3B82F6" }}
-                  >
-                    <LabelList dataKey="value" position="top" />
-                  </Line>
-                </LineChart>
-              </ResponsiveContainer>
-              <div className="flex justify-center gap-4 mt-3 text-sm font-medium">
-                <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 inline-block rounded bg-blue-600"></span>
-                  <span className="text-gray-700">Sales Value</span>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="flex justify-center items-center h-[250px]">
-              <NoDataSVG />
-            </div>
-          )}
-        </Card>
-
         {/* Recent Transactions */}
         <Card title="Recent Transactions">
           {recentTransactions.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full text-sm border border-gray-300 rounded-lg overflow-hidden">
-                <thead className="bg-gray-100 text-gray-700 font-semibold">
+                <thead className="bg-gray-100 text-gray-700 font-semibold text-center">
                   <tr>
                     <th className="border p-2">ID</th>
                     <th className="border p-2">Date</th>
-                    <th className="border p-2">Item</th>
+                    <th className="border p-2">Items</th>
                     <th className="border p-2">Amount</th>
                   </tr>
                 </thead>
                 <tbody>
                   {recentTransactions.map((tx) => (
-                    <tr key={tx.id} className="hover:bg-gray-50">
+                    <tr
+                      key={tx.id}
+                      className="hover:bg-gray-50 cursor-pointer text-center"
+                      onClick={() => handleRowClick(tx)}
+                    >
                       <td className="border p-2">{tx.id}</td>
                       <td className="border p-2">{tx.date}</td>
-                      <td className="border p-2">{tx.item}</td>
+                      <td className="border p-2">{tx.items}</td>
                       <td className="border p-2 font-medium text-green-600">
-                        ${tx.amount.toLocaleString()}
+                        ₹{tx.amount.toLocaleString("en-IN")}
                       </td>
                     </tr>
                   ))}
@@ -238,6 +240,51 @@ export default function Report() {
           )}
         </Card>
       </div>
+
+      {/* 🔹 Transaction Detail Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-[500px]">
+            <h2 className="text-lg font-bold mb-4 text-green-600">
+              Transaction #{selectedTransaction.id}
+            </h2>
+
+            {transactionItems.length > 0 ? (
+              <table className="w-full text-sm border border-gray-300 rounded-lg text">
+                <thead className="bg-green-200 text-gray-700 font-semibold text-center">
+                  <tr>
+                    <th className="border p-2">Item</th>
+                    <th className="border p-2">Qty</th>
+                    <th className="border p-2">Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {transactionItems.map((item, idx) => (
+                    <tr key={idx} className="hover:bg-gray-50 text-center">
+                      <td className="border p-2">{item.itemName}</td>
+                      <td className="border p-2">{item.qty}</td>
+                      <td className="border p-2 text-green-600 font-semibold">
+                        ₹{item.price.toLocaleString("en-IN")}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p>No items found</p>
+            )}
+
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
