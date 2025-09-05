@@ -63,13 +63,13 @@ function Master() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (activeTab === "item") {
         const uid = JSON.parse(localStorage.getItem("user")).userid;
+      if (activeTab === "item") {
         editing ? await updateItem(formData) : await addItem(formData, uid);
         toast.success(`Item ${editing ? "updated" : "added"} successfully!`);
         loadItems();
       } else {
-        editing ? await updateExpense(formData) : await addExpense(formData);
+        editing ? await updateExpense(formData) : await addExpense(formData, uid);
         toast.success(
           `Expense ${editing ? "updated" : "added"} successfully!`
         );
@@ -115,7 +115,7 @@ function Master() {
   };
 
   return (
-    <div className="min-h-screen bg-green-100 bg-[url('https://www.transparenttextures.com/patterns/grass.png')] bg-repeat flex flex-col items-center p-6">
+    <div className="min-h-screen bg-green-100 bg-[url('https://www.transparenttextures.com/patterns/grass.png')] bg-repeat flex flex-col items-center">
       <h2 className="text-3xl font-bold text-green-700 mb-6">Master</h2>
 
       {/* Tabs */}
@@ -190,7 +190,7 @@ function Master() {
 
       {/* Add/Edit Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-3 shadow-lg">
           <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
             <h3 className="text-xl font-bold text-green-700 mb-4">
               {editing ? "Edit" : "Add"}{" "}
@@ -219,7 +219,7 @@ function Master() {
                 />
               </div>
 
-              {activeTab === "item" && (
+              {(activeTab === "item" || activeTab === "expense") && (
                 <div>
                   <label className="block font-semibold text-gray-700">
                     UOM
@@ -266,18 +266,18 @@ function Master() {
 
       {/* View Modal */}
       {viewData && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-3 shadow-lg">
           <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
             <h3 className="text-xl font-bold text-green-700 mb-4">
               View {activeTab === "item" ? "Item" : "Expense"}
             </h3>
-            <p>
-              <strong>Name:</strong>{" "}
+            <p className="mb-2">
+              <strong>Name : </strong>{" "}
               {activeTab === "item" ? viewData.itemName : viewData.expenseName}
             </p>
-            {activeTab === "item" && (
-              <p>
-                <strong>UOM:</strong> {viewData.uom}
+            {(activeTab === "item" || activeTab === "expense") && (
+              <p className="mb-2">
+                <strong>UOM : </strong> {viewData.uom}
               </p>
             )}
             <div className="mt-4 flex justify-end">
@@ -293,9 +293,7 @@ function Master() {
       )}
 
       <ToastContainer
-        position="top-center"
-        autoClose={2000}
-        style={{ top: "50px" }}
+        position="bottom-center" autoClose={1000} style={{ bottom: "50px", padding: "10px" }}
       />
     </div>
   );

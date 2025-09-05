@@ -120,7 +120,7 @@ export default function Report() {
   );
 
   return (
-    <div className="p-6 min-h-screen">
+    <div className="min-h-screen">
       <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
         📊 Reports Dashboard
       </h1>
@@ -206,7 +206,7 @@ export default function Report() {
         </Card>
 
         {/* Recent Transactions */}
-        <Card title="Recent Transactions">
+        <Card title="Recent Transactions" className="col-span-1 md:col-span-2 lg:col-span-1">
           {recentTransactions.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full text-sm border border-gray-300 rounded-lg overflow-hidden">
@@ -246,7 +246,7 @@ export default function Report() {
 
       {/* 🔹 Transaction Detail Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50 p-3 shadow-lg">
           <div className="bg-white rounded-xl shadow-lg p-6 w-[500px]">
             <h2 className="text-lg font-bold mb-4 text-green-600">
               Transaction #{selectedTransaction.id}
@@ -307,7 +307,7 @@ export default function Report() {
         </div>
       )}
 
-       <ToastContainer position="bottom-center"  autoClose={1000}  style={{ bottom: "20px" }}  />
+       <ToastContainer position="bottom-center"  autoClose={1000}  style={{ bottom: "50px", padding: "10px" }}  />
     </div>
   );
 }

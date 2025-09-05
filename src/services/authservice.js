@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE = "http://192.168.1.130:8443" ;
+const API_BASE = "http://192.168.56.1:8443" ;
 
 // --- Auth ---
 export const signupUser = async (data) => {
@@ -80,8 +80,8 @@ export const fetchExpenses = async () => {
   }
 };
 
-export const addExpense = async (expense) => {
-  await fetch(`${API_BASE}/saveExpense`, {
+export const addExpense = async (expense , userid) => {
+  await fetch(`${API_BASE}/saveExpense/${userid}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(expense)
@@ -149,6 +149,23 @@ export const fetchItem = async (query) => {
     return result.data || [];
   } catch (error) {
     console.log("error fetch search item"+error);
+  }
+};
+
+// ✅ Fetch expenses by search
+export const fetchExpense = async (query) => {
+  try {
+    const res= await fetch(`${API_BASE}/getExpenseBySearch?input=${query}`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+    if (!res.ok) {
+      return [];
+    }
+    const result = await res.json();
+    return result.data || [];
+  } catch (error) {
+    console.log("error fetch search expense"+error);
   }
 };
 
