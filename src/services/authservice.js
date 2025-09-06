@@ -28,9 +28,9 @@ export const loginUser = async (data) => {
 };
 
 // --- Item CRUD ---
-export const fetchItems = async () => {
+export const fetchItems = async (userid) => {
   try {
-    const response = await fetch(`${API_BASE}/getAllItems`);
+    const response = await fetch(`${API_BASE}/getAllItems?userid=${userid}`);
     if (!response.ok) {
       console.error("Failed to fetch items");
       return [];
@@ -67,9 +67,9 @@ export const deleteItem = async (id) => {
 };
 
 // --- Expense CRUD ---
-export const fetchExpenses = async () => {
+export const fetchExpenses = async (userid) => {
   try {
-    const response = await fetch(`${API_BASE}/getAllExpenses`);
+    const response = await fetch(`${API_BASE}/getAllExpenses?userid=${userid}`);
     if (!response.ok) {
       return [];
     }
