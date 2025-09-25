@@ -1,5 +1,5 @@
-import React, { useState,useRef,useEffect } from "react";
-import { fetchItem, saveTransaction,fetchExpense } from "../services/authservice";
+import React, { useState, useRef, useEffect } from "react";
+import { fetchItem, saveTransaction, fetchExpense } from "../services/authservice";
 import { ToastContainer, toast } from "react-toastify";
 import { FaMoneyBill, FaBox } from "react-icons/fa";
 
@@ -20,6 +20,7 @@ const Transaction = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [activeRow, setActiveRow] = useState(null);
   const [commission, setCommission] = useState(10);
+  const [addedRow, setAddedRow] = useState(false); // 👈 track row addition
 
   const rows = activeTab === "item" ? itemRows : expenseRows;
   const setRows = activeTab === "item" ? setItemRows : setExpenseRows;
@@ -31,13 +32,13 @@ const Transaction = () => {
       return;
     }
     try {
-       let data = [];
-        if (activeTab === "item") {
-          data = await fetchItem(query);
-        } else {
-          data = await fetchExpense(query);
-        }
-        setSuggestions(data || []);
+      let data = [];
+      if (activeTab === "item") {
+        data = await fetchItem(query);
+      } else {
+        data = await fetchExpense(query);
+      }
+      setSuggestions(data || []);
     } catch (err) {
       console.error("Error fetching suggestions:", err);
     }
@@ -57,42 +58,46 @@ const Transaction = () => {
     setRows(updated);
   };
 
-    useEffect(() => {
-      if (activeTab === "item" && itemRows.length > 0) {
-        const lastIndex = itemRows.length - 1;
-        itemRefs.current[lastIndex]?.focus();
-      }
-    }, [itemRows]);
+  // Focus only when new row is added
+  useEffect(() => {
+    if (activeTab === "item" && itemRows.length > 0 && addedRow) {
+      const lastIndex = itemRows.length - 1;
+      itemRefs.current[lastIndex]?.focus();
+      setAddedRow(false); // reset after focusing
+    }
+  }, [itemRows]);
 
-    useEffect(() => {
-      if (activeTab === "expense" && expenseRows.length > 0) {
-        const lastIndex = expenseRows.length - 1;
-        expenseRefs.current[lastIndex]?.focus();
-      }
-    }, [expenseRows]);
+  useEffect(() => {
+    if (activeTab === "expense" && expenseRows.length > 0 && addedRow) {
+      const lastIndex = expenseRows.length - 1;
+      expenseRefs.current[lastIndex]?.focus();
+      setAddedRow(false); // reset after focusing
+    }
+  }, [expenseRows]);
 
   // Add new row
   const addRow = () => {
     if (activeTab === "item") {
-    setItemRows((prev) => [
-      ...prev,
-      { itemId: null, name: "", price: 0, quantity: 0, total: 0 }
-    ]);
-  } else {
-    setExpenseRows((prev) => [
-      ...prev,
-      { expenseId: null, name: "", price: 0, quantity: 0, total: 0 }
-    ]);
-  }
+      setItemRows((prev) => [
+        ...prev,
+        { itemId: null, name: "", price: 0, quantity: 0, total: 0 }
+      ]);
+    } else {
+      setExpenseRows((prev) => [
+        ...prev,
+        { expenseId: null, name: "", price: 0, quantity: 0, total: 0 }
+      ]);
+    }
+    setAddedRow(true); // 👈 trigger focus only after adding
   };
 
   // Remove row
   const removeRow = (index) => {
-     if (activeTab === "item") {
-    setItemRows(itemRows.filter((_, i) => i !== index));
-  } else {
-    setExpenseRows(expenseRows.filter((_, i) => i !== index));
-  }
+    if (activeTab === "item") {
+      setItemRows(itemRows.filter((_, i) => i !== index));
+    } else {
+      setExpenseRows(expenseRows.filter((_, i) => i !== index));
+    }
   };
 
   // Submit
@@ -127,8 +132,6 @@ const Transaction = () => {
     }
   };
 
-
-
   // Calculations
   const subTotal = rows.reduce(
     (sum, row) => sum + (parseFloat(row.total) || 0),
@@ -145,17 +148,13 @@ const Transaction = () => {
       <div className="flex space-x-4 mb-4">
         <button
           onClick={() => setActiveTab("item")}
-          className={`px-6 rounded-lg flex items-center gap-5 ${
-            activeTab === "item" ? "bg-green-600 text-white" : "bg-gray-200"
-          }`}
+          className={`px-6 rounded-lg flex items-center gap-5 ${activeTab === "item" ? "bg-green-600 text-white" : "bg-gray-200"}`}
         >
           <FaBox /> Items
         </button>
         <button
           onClick={() => setActiveTab("expense")}
-          className={`px-6 py-2 rounded-lg flex items-center gap-5 ${
-            activeTab === "expense" ? "bg-green-600 text-white" : "bg-gray-200"
-          }`}
+          className={`px-6 py-2 rounded-lg flex items-center gap-5 ${activeTab === "expense" ? "bg-green-600 text-white" : "bg-gray-200"}`}
         >
           <FaMoneyBill /> Expenses
         </button>
@@ -239,9 +238,7 @@ const Transaction = () => {
                   step="0.01"
                   placeholder="Qty"
                   value={row.quantity}
-                  onChange={(e) =>
-                    handleInputChange(index, "quantity", e.target.value)
-                  }
+                  onChange={(e) => handleInputChange(index, "quantity", e.target.value)}
                   className="w-full border border-gray-300 rounded-lg py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
               </div>
@@ -253,9 +250,7 @@ const Transaction = () => {
                   step="0.01"
                   placeholder="Price"
                   value={row.price}
-                  onChange={(e) =>
-                    handleInputChange(index, "price", e.target.value)
-                  }
+                  onChange={(e) => handleInputChange(index, "price", e.target.value)}
                   className="w-full border border-gray-300 rounded-lg py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
               </div>
@@ -264,8 +259,8 @@ const Transaction = () => {
               <div className="font-medium text-gray-700">₹{row.total}</div>
             </>
           ) : (
-            <>              
-            {/* Expense Name (with suggestions) */}
+            <>
+              {/* Expense Name (with suggestions) */}
               <div className="relative">
                 <input
                   type="text"
@@ -300,7 +295,6 @@ const Transaction = () => {
                   </ul>
                 )}
               </div>
-
 
               {/* Qty */}
               <div>
@@ -344,25 +338,31 @@ const Transaction = () => {
 
       {/* Totals */}
       {activeTab === "item" && (
-      <div className="mt-6 space-y-2">
-        <div className="flex justify-end text-gray-700">
-          <span className="mr-4">Sub Total:</span>
-          <span className="font-medium">₹{subTotal.toLocaleString("en-IN", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
+        <div className="mt-6 space-y-2">
+          <div className="flex justify-end text-gray-700">
+            <span className="mr-4">Sub Total:</span>
+            <span className="font-medium">
+              ₹{subTotal.toLocaleString("en-IN", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
+            </span>
+          </div>
         </div>
-      </div>
       )}
-      
+
       <div className="mt-2 space-y-2">
         {activeTab === "item" && (
           <div className="flex justify-end text-gray-700">
             <span className="mr-4">Commission ({commission}%):</span>
-            <span className="font-medium">₹{commissionTotal.toLocaleString("en-IN", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
+            <span className="font-medium">
+              ₹{commissionTotal.toLocaleString("en-IN", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
+            </span>
           </div>
         )}
 
         <div className="flex justify-end font-bold text-lg text-green-600">
           <span className="mr-4">Grand Total:</span>
-          <span>₹{grandTotal.toLocaleString("en-IN", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
+          <span>
+            ₹{grandTotal.toLocaleString("en-IN", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
+          </span>
         </div>
       </div>
 

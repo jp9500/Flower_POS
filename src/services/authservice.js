@@ -28,9 +28,9 @@ export const loginUser = async (data) => {
 };
 
 // --- Item CRUD ---
-export const fetchItems = async (userid) => {
+export const fetchItems = async () => {
   try {
-    const response = await fetch(`${API_BASE}/getAllItems?userid=${userid}`);
+    const response = await fetch(`${API_BASE}/getAllItems`);
     if (!response.ok) {
       console.error("Failed to fetch items");
       return [];
@@ -67,9 +67,9 @@ export const deleteItem = async (id) => {
 };
 
 // --- Expense CRUD ---
-export const fetchExpenses = async (userid) => {
+export const fetchExpenses = async () => {
   try {
-    const response = await fetch(`${API_BASE}/getAllExpenses?userid=${userid}`);
+    const response = await fetch(`${API_BASE}/getAllExpenses`);
     if (!response.ok) {
       return [];
     }
@@ -113,10 +113,9 @@ export const saveTransaction = async (rows) => {
 
     if (!res.ok) {
       return { ok: false };
+    }else{
+      return { ok: true };
     }
-
-    const data = await res.json();
-    return { ok: true, data };
   } catch (error) {
     console.error("Error saving transaction:", error);
     return { ok: false, error };
@@ -203,8 +202,24 @@ export const getItemWiseSales = async (from, to) => {
   }
 };
 
+// ✅ Fetch Expense-Wise sales
+export const getExpenseWiseSales = async (from, to) => {
+  try {
+    const res= await fetch(`${API_BASE}/expenseWiseSales?from=${from}&to=${to}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (res != null) {
+      const result = await res.json();
+      return result;
+    }
+  } catch (error) {
+    console.log("error fetchItemWiseSales search item"+error);
+  }
+};
+
 // ✅ Fetch recent transactions
-export const getRecentTransactions = async (from, to) => {
+export const getSalesTransactions = async (from, to) => {
   try {
     const res= await fetch(`${API_BASE}/recentTransactions?from=${from}&to=${to}`, {
       method: 'GET',
@@ -219,10 +234,43 @@ export const getRecentTransactions = async (from, to) => {
   }
 };
 
+// ✅ Fetch recent transactions
+export const getExpenseTransactions = async (from, to) => {
+  try {
+    const res= await fetch(`${API_BASE}/getExpenseTransactions?from=${from}&to=${to}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (res != null) {
+      const result = await res.json();
+      return result;
+    }
+  } catch (error) {
+    console.log("error fetchRecentTransactions search item"+error);
+  }
+};
+
 // ✅ Fetch transaction details
-export const getTransactionDetails = async (id) => {
+export const getSalesTransactionDetails = async (id) => {
   try {
     const res= await fetch(`${API_BASE}/transactionDetails?id=${id}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (res != null) {
+      const result = await res.json();
+      return result;
+    }
+  } catch (error) {
+    console.log("error fetchTransactionDetails search item"+error);
+  }
+};
+
+
+// ✅ Fetch transaction details
+export const getExpenseTransactionDetails = async (id) => {
+  try {
+    const res= await fetch(`${API_BASE}/getExpenseTransactionDetails?id=${id}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     });

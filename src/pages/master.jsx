@@ -26,7 +26,6 @@ function Master() {
   const [formData, setFormData] = useState({});
   const [editing, setEditing] = useState(false);
   const [viewData, setViewData] = useState(null);
-  const [uid, setUserId] = useState({});
 
   useEffect(() => {
     loadItems();
@@ -34,12 +33,12 @@ function Master() {
   }, []);
 
   const loadItems = async () => {
-    const data = await fetchItems(uid);
+    const data = await fetchItems();
     setItems(data);
   };
 
   const loadExpenses = async () => {
-    const data = await fetchExpenses(uid);
+    const data = await fetchExpenses();
     setExpenses(data);
   };
 
@@ -61,13 +60,10 @@ function Master() {
     setViewData(null);
   };
 
-   const userid = JSON.parse(localStorage.getItem("user")).userid;
-   if(userid != '' && userid != 'undefined' && uid !== userid){
-    setUserId(userid);
-   }
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+        const uid = JSON.parse(localStorage.getItem("user")).userid;
       if (activeTab === "item") {
         editing ? await updateItem(formData) : await addItem(formData, uid);
         toast.success(`Item ${editing ? "updated" : "added"} successfully!`);
